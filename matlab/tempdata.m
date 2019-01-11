@@ -1,0 +1,66 @@
+function[Z,X,T,id,delta,Ddelta,N]=tempdata(alpha,beta,gamma,theta,n)
+%lambda_0(t)=5+0.2t,gamma_0(t)=8+0.2t,C=U(0,2),nu=gamma(1,1),gamma=1,
+muz=zeros(6,1);
+sigmaz=zeros(6,6);
+for i=1:6
+    for j=1:6
+        sigmaz(i,j)=0.5.^(abs(i-j));
+    end
+end
+C=unifrnd(0,2,n,1);
+Z=mvnrnd(muz,sigmaz,n);
+nu=gamrnd(1./theta,theta,n,1);
+nu=log(nu);
+U1=unifrnd(0,1,n,1);
+temp1=-log(U1)./exp(Z*alpha+gamma.*nu);
+D=(-5+sqrt(25+0.4.*temp1))./0.2;
+X=min(D,C);
+T=zeros(n,1000);
+delta=(D<=C);
+count_row=0;
+id=zeros(10000,1);
+temp_begin=1;
+for i=1:n
+    U=rand(1,1);
+    temp2=-log(U)./exp(nu(i)+Z(i,:)*beta);
+    tempT=(-8+sqrt(64+0.4.*temp2))./0.2;
+    k=1;
+        while((tempT<=X(i)))
+            T(i,k)=tempT;
+            k=k+1;
+            U=rand(1,1);
+            temp2=-log(U)./exp(nu(i)+Z(i,:)*beta)+8.*tempT+0.1.*tempT.^2;
+            tempT=(-8+sqrt(64+0.4.*temp2))./0.2;
+        end
+        count_row=count_row+k;
+        temp_end=temp_begin+k-1;
+        id(temp_begin:temp_end)=repmat(i,k,1);
+        temp_begin=temp_end+1;
+end
+ZL=zeros(count_row,6);
+XL=zeros(count_row,1);
+deltaL=zeros(count_row,1);
+TL=zeros(count_row,1);
+Ddelta=zeros(count_row,1);
+temp_begin=1;
+for i=1:n
+ temp_count=sum(id==i);
+ temp_end=temp_begin+temp_count-1;
+ ZL(temp_begin:temp_end,:)=repmat(Z(i,:),temp_count,1);
+ XL(temp_begin:temp_end)=repmat(X(i),temp_count,1);
+ deltaL(temp_begin:temp_end)=repmat(delta(i),temp_count,1);
+ Ddelta(temp_begin)=1;
+ if(temp_count==1)
+     TL(temp_begin)=X(i);
+ else
+     TL(temp_begin)=X(i);
+ TL(temp_begin+1:temp_end)=T(i,1:temp_count-1);
+ end
+ temp_begin=temp_end+1;
+end
+Z=ZL;
+X=XL;
+T=TL;
+delta=deltaL;
+id=id(id~=0);
+N=count_row-n;
