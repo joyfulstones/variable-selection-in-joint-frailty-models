@@ -1,0 +1,12 @@
+function[Z,X,delta]=data(beta,gamma0,gamma1,n)
+%lambda(t)=2*t+beta*Z;
+Z=binornd(1,0.5,n,1);
+%Z=unifrnd(0,1,n,1);
+P=exp(gamma0+gamma1.*Z)./(1+exp(gamma0+gamma1.*Z));
+eta=binornd(1,P);
+C=unifrnd(0,5,n,1);
+%C=exprnd(10,n,1);%lambda=0.1
+U=unifrnd(0,1,n,1);
+T=sqrt(1./4.*beta.^2.*Z.*Z-log(U))-1./2.*beta.*Z;
+X=(1-eta).*C+eta.*(min(T,C));
+delta=eta.*(T<=C);
