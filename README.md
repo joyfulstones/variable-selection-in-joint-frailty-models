@@ -1,5 +1,5 @@
 # variable-selection-in-joint-frailty-models
-This is the code and supplementary materials in the paper "Variable selection for joint frailty models of recurrent and terminal events".
+This is the code and supplementary materials in the paper "Variable selection in joint frailty models of recurrent and terminal events".
 
 We provide some SAS and Matlab codes when the sample size n is 500 in this folder. Please change the paths in the code file before you run the program.
 
